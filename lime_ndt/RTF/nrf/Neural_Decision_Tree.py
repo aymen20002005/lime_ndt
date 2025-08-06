@@ -459,7 +459,7 @@ class ndt:
 			return mean_squared_error(y, self.predict(X, **kwargs))
 
 class NDTClassifier(ndt):
-	def __init__(self, D, gammas=[1, 100], tree_id=None, sigma=0, gamma_activation=True):
+	def __init__(self, D, gammas=[1, 100], tree_id=0, sigma=0, gamma_activation=True):
 		super().__init__(D, gammas=gammas, tree_id=tree_id,
 						 sigma=sigma, gamma_activation=gamma_activation,
 						 is_classifier=True)
@@ -500,7 +500,7 @@ class NDTClassifier(ndt):
 
 
 class NDTRegressor(ndt):
-	def __init__(self, D, gammas=[1, 100], tree_id=None, sigma=0, gamma_activation=True):
+	def __init__(self, D, gammas=[1, 100], tree_id=0, sigma=0, gamma_activation=True):
 		super().__init__(D, gammas=gammas, tree_id=tree_id,
 						 sigma=sigma, is_classifier=False)
 
@@ -525,7 +525,7 @@ if __name__ == "__main__":
 	clf = DecisionTreeRegressor(max_depth=10)
 	clf = clf.fit(X, Y)
 
-	neural_decision_tree = NDTRegressor(D=2, gammas=[1, 100], tree_id=0)
+	neural_decision_tree = NDTRegressor(D=2)
 	neural_decision_tree.compute_matrices_and_biases(clf)
 	neural_decision_tree.to_keras(loss='mean_squared_error')
 
