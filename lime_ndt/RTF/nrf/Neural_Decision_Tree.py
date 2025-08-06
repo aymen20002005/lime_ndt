@@ -186,7 +186,7 @@ class CustomEarlyStopping(Callback):
         return monitor_value
 
 class ndt:
-	def __init__(self, D, gammas=[1, 100], tree_id=None,
+	def __init__(self, num_features, gammas=[1, 100], tree_id=None,
 				 sigma=0, gamma_activation=True, is_classifier=False):
 		"""
 		Create a neural decision tree
@@ -204,7 +204,7 @@ class ndt:
 		"""
 		self.gammas = gammas
 		self.use_gamma_activation=gamma_activation
-		self.D = D
+		self.num_features = num_features
 		self.tree_id = tree_id
 		self.sigma = sigma
 		self.is_classifier = is_classifier
@@ -227,8 +227,8 @@ class ndt:
 		self.N = self.splits.shape[0]
 		self.L = len(self.leaves)
 		# Fill Input -> Nodes layer matrix
-		self.W_in_nodes = pd.DataFrame(np.zeros((self.D, self.N)),
-									   index=list(range(self.D)),
+		self.W_in_nodes = pd.DataFrame(np.zeros((self.num_features, self.N)),
+									   index=list(range(self.num_features)),
 									   columns=self.splits.index)
 		for node, dim in self.splits[DIM].items():
 			self.W_in_nodes.loc[dim, node] = 1.
@@ -314,12 +314,12 @@ class ndt:
 
 		self.count_ops = 0
 
-		self.input_layer = Input(shape=(self.D,))
+		self.input_layer = Input(shape=(self.num_features,))
 		# Create first dense layer (input -> nodes) with optional regularization
 		self.nodes_layer = Dense(self.N,
 								 kernel_regularizer=kernel_regularizer[0])(self.input_layer)
 
-		self.count_ops = self.count_ops+2*self.D*self.N
+		self.count_ops = self.count_ops+2*self.num_features*self.N
 
 		# Add custom activation (tanh_gamma) after first dense layer
 		if self.use_gamma_activation:
@@ -459,8 +459,8 @@ class ndt:
 			return mean_squared_error(y, self.predict(X, **kwargs))
 
 class NDTClassifier(ndt):
-	def __init__(self, D, gammas=[1, 100], tree_id=0, sigma=0, gamma_activation=True):
-		super().__init__(D, gammas=gammas, tree_id=tree_id,
+	def __init__(self, num_features, gammas=[1, 100], tree_id=0, sigma=0, gamma_activation=True):
+		super().__init__(num_features, gammas=gammas, tree_id=tree_id,
 						 sigma=sigma, gamma_activation=gamma_activation,
 						 is_classifier=True)
 
@@ -500,8 +500,8 @@ class NDTClassifier(ndt):
 
 
 class NDTRegressor(ndt):
-	def __init__(self, D, gammas=[1, 100], tree_id=0, sigma=0, gamma_activation=True):
-		super().__init__(D, gammas=gammas, tree_id=tree_id,
+	def __init__(self, num_features, gammas=[1, 100], tree_id=0, sigma=0, gamma_activation=True):
+		super().__init__(num_features, gammas=gammas, tree_id=tree_id,
 						 sigma=sigma, is_classifier=False)
 
 
@@ -509,14 +509,14 @@ if __name__ == "__main__":
 	from sklearn.tree import DecisionTreeRegressor
 
 	dataset_length = 10000
-	D = 2
-	X = np.random.randn(dataset_length, D)*0.1
+	num_features = 2
+	X = np.random.randn(dataset_length, num_features)*0.1
 	X[0:dataset_length//2, 0] += 0.1
 	X[0:dataset_length//2, 0] += 0.2
 	Y = np.ones(dataset_length)
 	Y[0:dataset_length//2] *= 0
 
-	X_test = np.random.randn(dataset_length, D)*0.1
+	X_test = np.random.randn(dataset_length, num_features)*0.1
 	X_test[0:dataset_length//2, 0] += 0.1
 	X_test[0:dataset_length//2, 0] += 0.2
 	Y_test = np.ones(dataset_length)
@@ -525,7 +525,7 @@ if __name__ == "__main__":
 	clf = DecisionTreeRegressor(max_depth=10)
 	clf = clf.fit(X, Y)
 
-	neural_decision_tree = NDTRegressor(D=2)
+	neural_decision_tree = NDTRegressor(num_features=2)
 	neural_decision_tree.compute_matrices_and_biases(clf)
 	neural_decision_tree.to_keras(loss='mean_squared_error')
 
