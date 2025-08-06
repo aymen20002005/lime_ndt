@@ -72,21 +72,6 @@ class tanh_gamma(Layer):
 	def call(self, inputs):
 		return K.tanh(inputs*self.gamma)
 
-	def compute_output_shape(self, input_shape):
-		return input_shape
-
-
-class tanh(Layer):
-
-	def __init__(self, **kwargs):
-		super(tanh, self).__init__(**kwargs)
-
-	def call(self, inputs):
-		return K.tanh(inputs)
-
-	def compute_output_shape(self, input_shape):
-		return input_shape
-
 class CustomEarlyStopping(Callback):
     """
     Custom Early stopping callback that restores the best weights even is there
@@ -369,9 +354,8 @@ class ndt:
 		if self.use_gamma_activation:
 			self.act_layer_tanh_gamma1 = tanh_gamma(gamma=self.gammas[0])(self.nodes_layer)
 			self.count_ops = self.count_ops+self.N*26
-
 		else:
-			self.act_layer_tanh_gamma1 = tanh()(self.nodes_layer)
+			self.act_layer_tanh_gamma1 = tanh_gamma(gamma=1)(self.nodes_layer)
 			self.count_ops = self.count_ops+self.N*25
 
 		self.leaves_layer = Dense(self.L,
@@ -382,9 +366,8 @@ class ndt:
 		if self.use_gamma_activation:
 			self.act_layer_tanh_gamma2 = tanh_gamma(gamma=self.gammas[1])(self.leaves_layer)
 			self.count_ops = self.count_ops+self.L*26
-
 		else:
-			self.act_layer_tanh_gamma2 = tanh()(self.leaves_layer)
+			self.act_layer_tanh_gamma2 = tanh_gamma(gamma=1)(self.leaves_layer)
 			self.count_ops = self.count_ops+self.L*25
 
 		if self.is_classifier:
