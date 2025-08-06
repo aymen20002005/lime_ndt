@@ -315,11 +315,13 @@ class ndt:
 		self.count_ops = 0
 
 		self.input_layer = Input(shape=(self.D,))
+		# Create first dense layer (input -> nodes) with optional regularization
 		self.nodes_layer = Dense(self.N,
 								 kernel_regularizer=kernel_regularizer[0])(self.input_layer)
 
 		self.count_ops = self.count_ops+2*self.D*self.N
 
+		# Add custom activation (tanh_gamma) after first dense layer
 		if self.use_gamma_activation:
 			self.act_layer_tanh_gamma1 = tanh_gamma(gamma=self.gammas[0])(self.nodes_layer)
 			self.count_ops = self.count_ops+self.N*26
@@ -327,11 +329,13 @@ class ndt:
 			self.act_layer_tanh_gamma1 = tanh_gamma(gamma=1)(self.nodes_layer)
 			self.count_ops = self.count_ops+self.N*25
 
+		# Create second dense layer (nodes -> leaves) with optional regularization
 		self.leaves_layer = Dense(self.L,
 								  kernel_regularizer=kernel_regularizer[1])(self.act_layer_tanh_gamma1)
 
 		self.count_ops = self.count_ops+2*self.N*self.L
 
+		# Add custom activation (tanh_gamma) after second dense layer
 		if self.use_gamma_activation:
 			self.act_layer_tanh_gamma2 = tanh_gamma(gamma=self.gammas[1])(self.leaves_layer)
 			self.count_ops = self.count_ops+self.L*26
@@ -339,6 +343,7 @@ class ndt:
 			self.act_layer_tanh_gamma2 = tanh_gamma(gamma=1)(self.leaves_layer)
 			self.count_ops = self.count_ops+self.L*25
 
+		# Output layer: softmax for classification, linear for regression
 		if self.is_classifier:
 			kr = kernel_regularizer[2]
 			self.output_layer = Dense(self.C, activation='softmax',
@@ -355,19 +360,21 @@ class ndt:
 			self.count_ops = self.count_ops+2*self.L*self.C
 			self.count_ops = self.count_ops+1
 
+		# Build Keras models for full output, nodes, and leaves
 		self.model = Model(inputs=self.input_layer, outputs=self.output_layer)
 		self.model_nodes = Model(inputs=self.input_layer, outputs=self.nodes_layer)
 		self.model_leaves = Model(inputs=self.input_layer, outputs=self.leaves_layer)
 
+		# Initialize optimizer with given parameters and compile the model
 		self.sgd = optimizer(**optimizer_params)
 		self.model.compile(loss=loss, optimizer=self.sgd, metrics=metrics)
 
-		# print(self.model.summary())
-
+		# Flatten bias vectors for each layer
 		flat_b_nodes = self.b_nodes.values.flatten()
 		flat_b_leaves = self.b_leaves.values.flatten()
 		flat_b_out = self.b_out.values.flatten()
 
+		# Set initial weights and biases for each layer, adding random noise (sigma)
 		self.model.layers[1].set_weights(weights=[self.W_in_nodes+np.random.randn(*self.W_in_nodes.shape)*self.sigma,
 										 flat_b_nodes+np.random.randn(*flat_b_nodes.shape)*self.sigma])
 		self.model.layers[3].set_weights(weights=[self.W_nodes_leaves+np.random.randn(*self.W_nodes_leaves.shape)*self.sigma,
@@ -392,6 +399,7 @@ class ndt:
 
 		callbacks_list = []
 
+		# Add early stopping callback if requested
 		if earlyStopping:
 			early_stopping = CustomEarlyStopping(monitor=monitor,
 										min_delta=min_delta,
@@ -402,14 +410,17 @@ class ndt:
 
 			callbacks_list.append(early_stopping)
 
+		# Add sparsity callback if requested (enforces tree-like weights after each batch)
 		if sparse:
 
 			sparse_ndt = SparseNDT(self)
 			callbacks_list.append(sparse_ndt)
 
+		# If no callbacks are used, set callbacks_list to None
 		if not callbacks_list:
 			callbacks_list = None
 
+		# Train the Keras model with the provided data and callbacks
 		history = self.model.fit(x=X,
 								 y=y,
 								 callbacks=callbacks_list,
@@ -417,6 +428,8 @@ class ndt:
 								 verbose=verbose,
 								 validation_data=validation_data,
 								 **fit_params)
+		
+		# Track the epoch at which training stopped (for reporting or analysis)
 		if earlyStopping:
 			if early_stopping.stopped_epoch == 0:
 				self.stopped_epoch = epochs
