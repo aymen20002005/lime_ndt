@@ -442,27 +442,6 @@ class ndt:
 
 		return history.history
 
-	def get_activations(self,
-							X,
-							y=None):
-		"""
-		Get the activation for each layer
-
-		Args:
-				X (np.array or pandas.DataFrame): data set
-				y (np.array or pandas.Series): labels
-
-		Returns:
-
-		"""
-		nodes_a = pd.DataFrame(self.model_nodes.predict(X),
-							   columns=self.b_nodes.index)
-		leaves_a = pd.DataFrame(self.model_leaves.predict(X),
-								columns=self.b_leaves.index)
-		output_a = pd.DataFrame(self.model.predict(X),
-								columns=self.b_out.index)
-		return nodes_a, leaves_a, output_a
-
 	def get_weights_from_NN(self):
 		"""
 		Get the weights from the keras NN, and load them into attributes of the neural decision tree
@@ -492,17 +471,6 @@ class ndt:
 									   index=self.b_out.index,
 									   columns=self.b_out.columns)
 
-	def compute_weights_differences(self):
-		"""
-		Computes the difference between the original tree weights and those after training
-		"""
-		self.get_weights_from_NN()
-		self.diff_W_in_nodes = self.W_in_nodes - self.W_in_nodes_nn
-		self.diff_b_nodes = self.b_nodes - self.b_nodes_nn
-		self.diff_W_nodes_leaves = self.W_nodes_leaves - self.W_nodes_leaves_nn
-		self.diff_b_leaves = self.b_leaves - self.b_leaves_nn
-		self.diff_W_leaves_output = self.W_leaves_out - self.W_leaves_out_nn
-		self.diff_b_out = self.b_out - self.b_out_nn
 
 	def predict(self, X, **kwargs):
 		return self.model.predict(X, **kwargs)
@@ -519,78 +487,6 @@ class ndt:
 			return accuracy_score(y, self.predict(X, **kwargs))
 		else:
 			return mean_squared_error(y, self.predict(X, **kwargs))
-
-	def plot_differences(self):
-		"""
-		Plot the difference between the original tree weights and those after training
-		"""
-		if "diff_W_in_nodes" not in dir(self):
-			self.compute_weights_differences()
-		fig = plt.figure(figsize=(3, 2))
-		columns = 3
-		rows = 2
-		ax1a = fig.add_subplot(rows, columns, 1)
-		plt.imshow(self.diff_W_in_nodes, aspect="auto", cmap="gray")
-		ax1a.set_title("diff W in nodes")
-
-		ax2a = fig.add_subplot(rows, columns, 2)
-		plt.imshow(self.diff_b_nodes, aspect="auto", cmap="gray")
-		ax2a.set_title("diff b nodes")
-
-		ax3a = fig.add_subplot(rows, columns, 3)
-		plt.imshow(self.diff_W_nodes_leaves, aspect="auto", cmap="gray")
-		ax3a.set_title("diff W nodes leaves")
-
-		ax4a = fig.add_subplot(rows, columns, 4)
-		plt.imshow(self.diff_b_leaves, aspect="auto", cmap="gray")
-		ax4a.set_title("diff b leaves")
-
-		ax5a = fig.add_subplot(rows, columns, 5)
-		plt.imshow(self.diff_W_leaves_output, aspect="auto", cmap="gray")
-		ax5a.set_title("diff W leaves out")
-
-		ax6a = fig.add_subplot(rows, columns, 6)
-		plt.imshow(self.diff_b_out, aspect="auto", cmap="gray")
-		ax6a.set_title("diff b class")
-		plt.show()
-
-	def plot_W_nn_quantiles(self, quantiles=np.arange(0, 99.999, 0.001)):
-		"""
-		Plot the weights and biases quantiles
-		"""
-		fig = plt.figure(figsize=(3, 2))
-		columns = 3
-		rows = 2
-		ax1a = fig.add_subplot(rows, columns, 1)
-		plt.plot(quantiles, np.percentile(self.W_in_nodes_nn, quantiles))
-		plt.plot(quantiles, np.percentile(self.W_in_nodes, quantiles))
-		ax1a.set_title("W in nodes")
-
-		ax2a = fig.add_subplot(rows, columns, 2)
-		plt.plot(quantiles, np.percentile(self.b_nodes_nn, quantiles))
-		plt.plot(quantiles, np.percentile(self.b_nodes, quantiles))
-		ax2a.set_title("b nodes")
-
-		ax3a = fig.add_subplot(rows, columns, 3)
-		plt.plot(quantiles, np.percentile(self.W_nodes_leaves_nn, quantiles))
-		plt.plot(quantiles, np.percentile(self.W_nodes_leaves, quantiles))
-		ax3a.set_title("W nodes leaves")
-
-		ax4a = fig.add_subplot(rows, columns, 4)
-		plt.plot(quantiles, np.percentile(self.b_leaves_nn, quantiles))
-		plt.plot(quantiles, np.percentile(self.b_leaves, quantiles))
-		ax4a.set_title("b leaves")
-
-		ax5a = fig.add_subplot(rows, columns, 5)
-		plt.plot(quantiles, np.percentile(self.W_leaves_out_nn, quantiles))
-		plt.plot(quantiles, np.percentile(self.W_leaves_out, quantiles))
-		ax5a.set_title("W leaves out")
-
-		ax6a = fig.add_subplot(rows, columns, 6)
-		plt.plot(quantiles, np.percentile(self.b_out_nn, quantiles))
-		plt.plot(quantiles, np.percentile(self.b_out, quantiles))
-		ax6a.set_title("b class")
-		plt.show()
 
 	def neural_network_to_tree(self, node_leaves_matrix=None, in_nodes_matrix=None,
 							   nodes_biases=None, threshold=0.9):
@@ -720,102 +616,6 @@ class ndt:
 		# Retrieve the most important feature for each node (one could imagine to create new features if necessary)
 		features[in_nodes_matrix.columns] = in_nodes_matrix.index[in_nodes_matrix.values.argmax(axis=0)]
 		return children_right, children_left, thresholds, features
-
-	def assert_sample(self, X):
-		"""
-		Print the decision path for the samples as well as the activation functions.
-
-		Args:
-				X (pandas.DataFrame or numpy.array): dataset
-		"""
-		print_decision_path(self.decision_tree, X)
-		print(self.get_activations(X))
-
-	def print_tree_weights(self):
-		"""
-		Print tree weights
-		"""
-		print("W: Input -> Nodes")
-		print(self.W_in_nodes)
-		print("b: Input -> Nodes")
-		print(self.b_nodes)
-		print("W: Nodes -> Leaves")
-		print(self.W_nodes_leaves)
-		print("b: Nodes -> Leaves")
-		print(self.b_leaves)
-		print("W: Leaves -> Out")
-		print(self.W_leaves_out)
-		print("b: Leaves -> Out")
-		print(self.b_out)
-
-	def print_nn_weights(self):
-		"""
-		Print NN weights
-		"""
-		print("W: Input -> Nodes")
-		print(self.W_in_nodes_nn)
-		print("b: Input -> Nodes")
-		print(self.b_nodes_nn)
-		print("W: Nodes -> Leaves")
-		print(self.W_nodes_leaves_nn)
-		print("b: Nodes -> Leaves")
-		print(self.b_leaves_nn)
-		print("W: Leaves -> Out")
-		print(self.W_leaves_out_nn)
-		print("b: Leaves -> Out")
-		print(self.b_out_nn)
-
-	def plot_old_new_network(self):
-		"""
-		Plot new and old network side by side
-		"""
-		if "W_in_nodes" not in dir(self):
-			self.get_weights_from_NN()
-		fig = plt.figure(figsize=(6, 2))
-		columns = 6
-		rows = 2
-		ax1a = fig.add_subplot(rows, columns, 1)
-		plt.imshow(self.W_in_nodes, aspect="auto", cmap="gray")
-		ax1a.set_title("W in nodes")
-		ax1b = fig.add_subplot(rows, columns, 2)
-		plt.imshow(self.W_in_nodes_nn, aspect="auto", cmap="gray")
-		ax1b.set_title("W in nodes nn")
-
-		ax2a = fig.add_subplot(rows, columns, 3)
-		plt.imshow(self.b_nodes, aspect="auto", cmap="gray")
-		ax2a.set_title("b nodes ")
-		ax2b = fig.add_subplot(rows, columns, 4)
-		plt.imshow(self.b_nodes_nn, aspect="auto", cmap="gray")
-		ax2b.set_title("b nodes nn")
-
-		ax3a = fig.add_subplot(rows, columns, 5)
-		plt.imshow(self.W_nodes_leaves, aspect="auto", cmap="gray")
-		ax3a.set_title("W nodes leaves")
-		ax3b = fig.add_subplot(rows, columns, 6)
-		plt.imshow(self.W_nodes_leaves_nn, aspect="auto", cmap="gray")
-		ax3b.set_title("W nodes leaves nn")
-
-		ax4a = fig.add_subplot(rows, columns, 7)
-		plt.imshow(self.b_leaves, aspect="auto", cmap="gray")
-		ax4a.set_title("b leaves")
-		ax4b = fig.add_subplot(rows, columns, 8)
-		plt.imshow(self.b_leaves_nn, aspect="auto", cmap="gray")
-		ax4b.set_title("b leaves nn")
-
-		ax5a = fig.add_subplot(rows, columns, 9)
-		plt.imshow(self.W_leaves_out, aspect="auto", cmap="gray")
-		ax5a.set_title("W leaves out")
-		ax5b = fig.add_subplot(rows, columns, 10)
-		plt.imshow(self.W_leaves_out_nn, aspect="auto", cmap="gray")
-		ax5b.set_title("W leaves out nn")
-
-		ax6a = fig.add_subplot(rows, columns, 11)
-		plt.imshow(self.b_out, aspect="auto", cmap="gray")
-		ax6a.set_title("b class")
-		ax6b = fig.add_subplot(rows, columns, 12)
-		plt.imshow(self.b_out_nn, aspect="auto", cmap="gray")
-		ax6b.set_title("b class nn")
-		plt.show()
 
 
 class NDTClassifier(ndt):
@@ -951,7 +751,7 @@ def generateNNRegressor(arch, acts, input_size, n_classes=None):
 
 if __name__ == "__main__":
 	from sklearn.tree import DecisionTreeClassifier  # , export_graphviz
-	# import matplotlib.pyplot as plt
+
 	dataset_length = 10000
 	D = 2
 	X = np.random.randn(dataset_length, D)*0.1
@@ -969,20 +769,13 @@ if __name__ == "__main__":
 	clf = DecisionTreeClassifier(max_depth=10)
 	clf = clf.fit(X, Y)
 
-	a = ndt(D=2, gammas=[1, 100, 100], tree_id=0)
-	a.compute_matrices_and_biases(clf)
-	a.to_keras(loss='mean_squared_error')
-	print("FLOPs before:", a.count_ops)
-	a.fit(X, Y)
-	print("FLOPs after:", a.count_ops)
+	neural_decision_tree = ndt(D=2, gammas=[1, 100], tree_id=0)
+	neural_decision_tree.compute_matrices_and_biases(clf)
+	neural_decision_tree.to_keras(loss='mean_squared_error')
 
 	print("scores before training")
-	print(a.score(X_test, Y_test))
-	print(a.score(X, Y))
+	print(neural_decision_tree.score(X_test, Y_test))
 
-	print(clf.score(X_test, Y_test))
-	print(clf.score(X, Y))
-	errors = a.fit(X, Y, epochs=10)
+	errors = neural_decision_tree.fit(X, Y, epochs=10)
 	print("scores after training")
-	print(a.score(X_test, Y_test))
-	print(a.score(X, Y))
+	print(neural_decision_tree.score(X_test, Y_test))
