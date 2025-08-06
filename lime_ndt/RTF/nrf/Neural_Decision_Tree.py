@@ -2,26 +2,19 @@
 """
 Neural Decision Tree implementation
 """
-# import sys
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-# from collections import OrderedDict
+
 from tensorflow.keras import backend as K
 from tensorflow.keras import optimizers
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.activations import tanh
 from tensorflow.keras.layers import Dense, Input, Layer
 from tensorflow.keras.models import Model, Sequential
-from tensorflow.keras.regularizers import l1
 from tensorflow.keras.utils import to_categorical
-from sklearn.metrics import accuracy_score, mean_squared_error, r2_score
+from sklearn.metrics import accuracy_score, mean_squared_error
 
-# sys.path.append("../utils")
-# from common_functions import find_parent
-# from common_functions import leaves_id
-# from common_functions import get_list_split_phi_forest
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -30,21 +23,21 @@ from utils.common_functions import (get_list_split_phi,
 							  		  print_decision_path)
 
 
-# from sklearn.preprocessing import LabelEncoder
-
-
-BIAS = 1
-DIM = 0
-RIGHT = 1
-LEFT = -1
-LEAVES = -1
-LEAVES_THRESHOLDS = -2
-LEAVES_FEATURES = -2
-EMPTY_NODE = -5
+BIAS = 1 # Index for the bias value in split information
+DIM = 0 # Index for the feature dimension in split information
+RIGHT = 1 # Value representing the right child or right direction in the tree
+LEFT = -1 # Value representing the left child or left direction in the tree
+LEAVES = -1 # Special value indicating a leaf node
+LEAVES_THRESHOLDS = -2 # Special value indicating a leaf node threshold
+LEAVES_FEATURES = -2 # Special value indicating a leaf node feature
+EMPTY_NODE = -5 # Special value indicating an empty or non-existent node
 
 
 class SparseNDT(Callback):
-
+	"""
+	Callback to apply sparsity to the neural decision tree weights after each batch end.
+	The goal is to keep the behaviour of the network close to the original decision tree.
+	"""
 	def __init__(self, NDT):
 		super().__init__()
 
@@ -58,7 +51,7 @@ class SparseNDT(Callback):
 			self.weight_masks.append(w)
 
 	def on_batch_end(self, batch, logs=None):
-		layers = [2, 5]
+		layers = [2, 5] # Apply sparsity on the Activation, maybe we can try to change it to [1,3]
 
 		for i, layer in enumerate(layers):
 			wb = self.model.layers[layer].get_weights()
