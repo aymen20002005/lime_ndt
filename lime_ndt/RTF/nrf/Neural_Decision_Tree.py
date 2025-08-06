@@ -506,7 +506,7 @@ class NDTRegressor(ndt):
 
 
 if __name__ == "__main__":
-	from sklearn.tree import DecisionTreeClassifier
+	from sklearn.tree import DecisionTreeRegressor
 
 	dataset_length = 10000
 	D = 2
@@ -522,7 +522,7 @@ if __name__ == "__main__":
 	Y_test = np.ones(dataset_length)
 	Y_test[0:dataset_length//2] *= 0
 	# Train a Tree
-	clf = DecisionTreeClassifier(max_depth=10)
+	clf = DecisionTreeRegressor(max_depth=10)
 	clf = clf.fit(X, Y)
 
 	neural_decision_tree = ndt(D=2, gammas=[1, 100], tree_id=0)
