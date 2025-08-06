@@ -2,16 +2,14 @@
 """
 Neural Decision Tree implementation
 """
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
 from tensorflow.keras import backend as K
 from tensorflow.keras import optimizers
 from tensorflow.keras.callbacks import Callback
-from tensorflow.keras.activations import tanh
 from tensorflow.keras.layers import Dense, Input, Layer
-from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras.models import Model
 from tensorflow.keras.utils import to_categorical
 from sklearn.metrics import accuracy_score, mean_squared_error
 
@@ -19,8 +17,7 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils.common_functions import (get_list_split_phi,
-									  get_parents_nodes_leaves_dic,
-							  		  print_decision_path)
+									  get_parents_nodes_leaves_dic)
 
 
 BIAS = 1 # Index for the bias value in split information
