@@ -75,7 +75,7 @@ class tanh_gamma(Layer):
 class CustomEarlyStopping(Callback):
     """
     Custom Early stopping callback that restores the best weights even is there
-    was no early stopping during training. (Most od the code is the same as in
+    was no early stopping during training. (Most of the code is the same as in
     the EarlyStopping callback in Keras)
 
     Args:
@@ -97,7 +97,7 @@ class CustomEarlyStopping(Callback):
         restore_best_weights (bool, optional): whether to restore model weights from
             the epoch with the best value of the monitored quantity. If False,
             the model weights obtained at the last step of training are used. If
-            True, the weghts where the best value of the monitored quantity is achieved
+            True, the weights where the best value of the monitored quantity is achieved
             are restored, even if the training did not stop before the last epoch
             of training. Defaults to False.
     """
@@ -109,7 +109,8 @@ class CustomEarlyStopping(Callback):
                  mode='auto',
                  baseline=None,
                  restore_best_weights=False):
-
+		
+		# Initialize the callback with monitoring settings, patience, baseline, and options for restoring best weights.
         super(CustomEarlyStopping, self).__init__()
 
         self.monitor = monitor
@@ -142,16 +143,17 @@ class CustomEarlyStopping(Callback):
             self.min_delta *= -1
 
     def on_train_begin(self, logs=None):
-        # Allow instances to be re-used
+        # Reset internal state at the start of training (wait counter, stopped epoch, best weights, etc.).
         self.wait = 0
         self.stopped_epoch = 0
         self.best_weights_epoch = 0
         if self.baseline is not None:
             self.best = self.baseline
         else:
-            self.best = np.inf if self.monitor_op == np.less else -np.inf  # Use np.inf instead of np.Inf
+            self.best = np.inf if self.monitor_op == np.less else -np.inf
 
     def on_epoch_end(self, epoch, logs=None):
+		# Check if the monitored metric has improved. If not, increment wait counter and stop training if patience is exceeded. Save best weights if required.
         current = self.get_monitor_value(logs)
         if current is None:
             return
@@ -160,10 +162,8 @@ class CustomEarlyStopping(Callback):
             self.best = current
             self.wait = 0
             if self.restore_best_weights:  # keep track of the best weights and epoch
-                # print(epoch)
                 self.best_weights_epoch = epoch
                 self.best_weights = self.model.get_weights()
-                # print(self.model.get_weights())
         else:
             self.wait += 1
             if self.wait >= self.patience:
@@ -171,15 +171,16 @@ class CustomEarlyStopping(Callback):
                 self.model.stop_training = True
 
     def on_train_end(self, logs=None):
+		# At the end of training, optionally print early stopping info and restore the best weights if requested.
         if self.stopped_epoch > 0 and self.verbose > 0:
             print('Epoch %05d: early stopping' % (self.stopped_epoch + 1))
         if self.restore_best_weights:  # restore best weights even if training did not stop
             if self.verbose > 0:
                 print('Restoring model weights from the end of the best epoch:', self.best_weights_epoch)
             self.model.set_weights(self.best_weights)
-            # print(self.model.get_weights())
 
     def get_monitor_value(self, logs):
+		# Retrieve the value of the monitored metric from the logs dictionary for the current epoch.
         logs = logs or {}
         monitor_value = logs.get(self.monitor)
         return monitor_value
@@ -188,7 +189,7 @@ class ndt:
 	def __init__(self, D, gammas=[10, 1], tree_id=None,
 				 sigma=0, gamma_activation=True, is_classifier=False):
 		"""
-		Create an neural decision tree
+		Create a neural decision tree
 
 		Args:
 		gammas (list): Metaparameter for each layer of the neural decision tree
@@ -263,20 +264,13 @@ class ndt:
 			class_counts_per_leaf = decision_tree.tree_.value[list(self.leaves.keys())]
 			class_counts_per_leaf = class_counts_per_leaf.reshape(self.L, self.C)
 			class_probas_all_leaves = class_counts_per_leaf * 1/np.sum(class_counts_per_leaf)
-
-   			# self.W_leaves_out = pd.DataFrame(class_counts_per_leaf,
-			#                                  index=self.leaves.keys(),
-			#                                  columns=self.classes)
+			
 			self.W_leaves_out = pd.DataFrame(class_probas_all_leaves,
 												index=self.leaves.keys(),
 												columns=self.classes)
-			# self.W_leaves_out = (self.W_leaves_out.T * 1./self.W_leaves_out.T.sum()).T * 0.5
 			self.W_leaves_out = self.W_leaves_out * 0.5
-			# self.W_leaves_out *= self.gammas[2]
-			# Fill class biases
-			# self.b_out = pd.DataFrame(np.zeros(self.C, dtype='double'),
-			#                           index=self.classes,
-			#                           columns=["CLASS_BIASES"])
+
+			# Fill Leaves -> class biases
 			self.b_out = pd.DataFrame(np.sum(class_probas_all_leaves, axis=0),
 										index=self.classes,
 										columns=["CLASS_BIASES"])
@@ -300,31 +294,6 @@ class ndt:
 									  index=[self.C],
 									  columns=["BIAS"])
 			self.b_out = self.b_out/2
-
-		self.specify_tree_id()
-
-	def specify_tree_id(self):
-		"""
-		Change the name of the columns/indexes of the weights and biases to  include
-		the tree id
-		"""
-		def add_id_2_elements(list_values, id_to_add):
-			append_id = lambda x: str(id_to_add)+"_"+str(x)
-			return map(append_id, list_values)
-		if self.tree_id is not None:
-			# Rename input -> nodes matrix biases
-			self.W_in_nodes.columns = add_id_2_elements(self.W_in_nodes.columns,
-														self.tree_id)
-			self.b_nodes.index = add_id_2_elements(self.b_nodes.index, self.tree_id)
-			# Rename nodes -> leaves matrix biases
-			self.W_nodes_leaves.index = add_id_2_elements(self.W_nodes_leaves.index,
-														  self.tree_id)
-			self.W_nodes_leaves.columns = add_id_2_elements(self.W_nodes_leaves.columns,
-														  	self.tree_id)
-			self.b_leaves.index = add_id_2_elements(self.b_leaves.index, self.tree_id)
-			# Rename leaves -> classes matrix biases
-			self.W_leaves_out.index = add_id_2_elements(self.W_leaves_out.index,
-														self.tree_id)
 
 	def to_keras(self, loss,
 				 metrics=[], optimizer=optimizers.Adam,
