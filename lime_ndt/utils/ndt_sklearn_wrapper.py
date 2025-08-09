@@ -2,8 +2,8 @@ import numpy as np
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from RTF.model.Neural_Decision_Tree import NDTRegressor
-from RTF.model.Neural_Decision_Tree import NDTClassifier
+from ndt.model.Neural_Decision_Tree import NDTRegressor
+from ndt.model.Neural_Decision_Tree import NDTClassifier
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.tree import DecisionTreeRegressor
 
