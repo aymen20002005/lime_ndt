@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="lime_ndt",
-    version="0.1.1",
+    version="0.1.2",
     author="Mohamed Aymen BOUYAHIA",
     author_email="mohamed-aymen.bouyahia@ensta-paris.fr",
     description="Enhancing LIME through Neural Decision Trees",
