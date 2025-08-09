@@ -48,7 +48,7 @@ explainer = LimeTabularExplainer(
 )
 
 # Create the local NDT model
-model_regressor = NDTRegressorWrapper(gammas=[1,1], D=X_train.shape[1], max_depth=4)
+model_regressor = NDTRegressorWrapper(D=X_train.shape[1])  # gamma=[1,100] , max_depth = 5
 
 # Explain a test instance
 exp = explainer.explain_instance(
