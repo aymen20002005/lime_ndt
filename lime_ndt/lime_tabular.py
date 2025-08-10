@@ -12,7 +12,6 @@ import scipy as sp
 import sklearn
 import sklearn.preprocessing
 from sklearn.utils import check_random_state
-from scipy.stats.distributions import norm
 
 from lime_ndt.discretize import QuartileDiscretizer
 from lime_ndt.discretize import DecileDiscretizer
