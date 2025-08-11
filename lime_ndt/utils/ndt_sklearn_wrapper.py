@@ -36,9 +36,13 @@ class NDTRegressorWrapper(BaseEstimator, RegressorMixin):
 
     @property
     def coef_(self):
-        # Retourne la moyenne des poids d'entrée pour compatibilité LIME
-        return self.ndt.W_in_nodes.values.mean(axis=1)
-
+        # Multiplication des 3 matrices pour obtenir l'impact global des features
+        W1 = self.ndt.W_in_nodes.values            # features -> nodes
+        W2 = self.ndt.W_nodes_leaves.values        # nodes -> leaves
+        W3 = self.ndt.W_leaves_out.values          # leaves -> output
+        coef_matrix = W1 @ W2 @ W3
+        return coef_matrix.mean(axis=1)            # importance moyenne par feature
+    
 class NDTClassifierWrapper(BaseEstimator, ClassifierMixin):
     def __init__(self, D, gammas=[1, 100], tree_id=None, sigma=0, 
                  gamma_activation=True, max_depth=5, random_state=42, epochs=10, to_categorical_conversion=True):
@@ -77,5 +81,9 @@ class NDTClassifierWrapper(BaseEstimator, ClassifierMixin):
 
     @property
     def coef_(self):
-        # Retourne la moyenne des poids d'entrée pour compatibilité LIME
-        return self.ndt.W_in_nodes.values.mean(axis=1)
+        # Multiplication des 3 matrices pour obtenir l'impact global des features
+        W1 = self.ndt.W_in_nodes.values            # features -> nodes
+        W2 = self.ndt.W_nodes_leaves.values        # nodes -> leaves
+        W3 = self.ndt.W_leaves_out.values          # leaves -> output
+        coef_matrix = W1 @ W2 @ W3
+        return coef_matrix.mean(axis=1)            # importance moyenne par feature
