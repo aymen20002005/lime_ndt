@@ -52,7 +52,7 @@ model_regressor = NDTRegressorWrapper(D=X_train.shape[1])  # gamma=[1,100] , max
 
 # Explain a test instance
 exp = explainer.explain_instance(
-    X_test[0],
+    X_test[8],
     predict_fn,
     num_features=10,
     model_regressor=model_regressor
@@ -62,7 +62,8 @@ exp = explainer.explain_instance(
 exp.as_pyplot_figure()
 plt.show()
 ```
-![image](https://github.com/user-attachments/assets/fbdf4b6e-8c4c-4016-998a-aa71e29e05d9)
+<img width="718" height="557" alt="image" src="https://github.com/user-attachments/assets/b59c98ec-2463-4a65-a465-5153d5137151" />
+
 
 ## Requirements
 
