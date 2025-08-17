@@ -455,46 +455,6 @@ class ndt:
 		else:
 			return mean_squared_error(y, self.predict(X, **kwargs))
 
-class NDTClassifier(ndt):
-	def __init__(self, num_features, gammas=[1, 100], tree_id=0, sigma=0, gamma_activation=True):
-		super().__init__(num_features, gammas=gammas, tree_id=tree_id,
-						 sigma=sigma, gamma_activation=gamma_activation,
-						 is_classifier=True)
-
-	def fit(self, X, y, to_categorical_conversion=True, sparse=False, epochs=100,
-			min_delta=0, patience=10, earlyStopping=True,
-			monitor='loss', validation_data=None, verbose=0,
-			**fit_params):
-
-		if to_categorical_conversion:
-			self.to_categorical = True
-			y = to_categorical(y)
-			if validation_data is not None:
-				yv = validation_data[1]
-				yv = to_categorical(yv)
-				validation_data = (validation_data[0], yv)
-
-		return super().fit(X, y, sparse=sparse, epochs=epochs, min_delta=min_delta,
-						   patience=patience, earlyStopping=earlyStopping, monitor=monitor,
-						   validation_data=validation_data, verbose=verbose, **fit_params)
-
-	def predict_proba(self, X, **kwargs):
-		return super().predict(X, **kwargs)
-
-	def predict_classes(self, X, **kwargs):
-		"""
-		Predict class membership with the neural decision tree
-
-		Args:
-		X (numpy.array or pandas.DataFrame): dataset
-		y (numpy.array or pandas.Series): labels
-		"""
-		class_indexes = np.argmax(self.predict_proba(X, **kwargs), axis=1)
-		return self.classes[class_indexes]
-
-	def predict(self, X, **kwargs):
-		return self.predict_classes(X, **kwargs)
-
 
 class NDTRegressor(ndt):
 	def __init__(self, num_features, gammas=[1, 100], tree_id=0, sigma=0, gamma_activation=True):
