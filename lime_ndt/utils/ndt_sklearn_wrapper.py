@@ -7,7 +7,7 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.tree import DecisionTreeRegressor
 
 class NDTRegressorWrapper(BaseEstimator, RegressorMixin):
-    def __init__(self, D, gammas=[1, 100], tree_id=None, sigma=0, 
+    def __init__(self, D, gammas=[100, 1], tree_id=None, sigma=0, 
                  gamma_activation=True, max_depth=5, random_state=42, epochs=10):
         self.D = D
         self.gammas = gammas
