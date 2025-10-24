@@ -1,4 +1,7 @@
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/lime-ndt?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/lime-ndt)
+![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
+![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=aymen20002005_lime_ndt&metric=vulnerabilities)
+
 # lime_ndt
 
 lime_ndt is a Python library that introduces an enhanced version of the LIME technique for model explainability, leveraging Neural Decision Trees (NDTs) for improved local and global interpretability of machine learning models.
