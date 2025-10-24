@@ -58,35 +58,15 @@ class TestGenericUtils(unittest.TestCase):
                 foo_not_callable = FooNotCallable('KO')
                 has_arg(foo_not_callable, 'message')
 
-        # Python 2, argument in / not in valid arguments / keyword arguments
-        if sys.version_info < (3,):
-            self.assertFalse(has_arg(foo_callable, 'invalid_arg'))
-            self.assertTrue(has_arg(foo_callable.positional_argument_call, 'arg1'))
-            self.assertFalse(has_arg(foo_callable.multiple_positional_arguments_call, 'argX'))
-            self.assertFalse(has_arg(foo_callable.keyword_argument_call, 'argX'))
-            self.assertTrue(has_arg(foo_callable.keyword_argument_call, 'filter_'))
-            self.assertTrue(has_arg(foo_callable.multiple_keyword_arguments_call, 'arg2'))
-            self.assertFalse(has_arg(foo_callable.multiple_keyword_arguments_call, 'arg3'))
-            self.assertFalse(has_arg(foo_callable.undefined_keyword_arguments_call, 'argX'))
-        # Python 3, argument in / not in valid arguments / keyword arguments
-        elif sys.version_info < (3, 6):
-            self.assertFalse(has_arg(foo_callable, 'invalid_arg'))
-            self.assertTrue(has_arg(foo_callable.positional_argument_call, 'arg1'))
-            self.assertFalse(has_arg(foo_callable.multiple_positional_arguments_call, 'argX'))
-            self.assertFalse(has_arg(foo_callable.keyword_argument_call, 'argX'))
-            self.assertTrue(has_arg(foo_callable.keyword_argument_call, 'filter_'))
-            self.assertTrue(has_arg(foo_callable.multiple_keyword_arguments_call, 'arg2'))
-            self.assertFalse(has_arg(foo_callable.multiple_keyword_arguments_call, 'arg3'))
-            self.assertFalse(has_arg(foo_callable.undefined_keyword_arguments_call, 'argX'))
-        else:
-            self.assertFalse(has_arg(foo_callable, 'invalid_arg'))
-            self.assertTrue(has_arg(foo_callable.positional_argument_call, 'arg1'))
-            self.assertFalse(has_arg(foo_callable.multiple_positional_arguments_call, 'argX'))
-            self.assertFalse(has_arg(foo_callable.keyword_argument_call, 'argX'))
-            self.assertTrue(has_arg(foo_callable.keyword_argument_call, 'filter_'))
-            self.assertTrue(has_arg(foo_callable.multiple_keyword_arguments_call, 'arg2'))
-            self.assertFalse(has_arg(foo_callable.multiple_keyword_arguments_call, 'arg3'))
-            self.assertFalse(has_arg(foo_callable.undefined_keyword_arguments_call, 'argX'))
+        # Test argument validation (common for all Python versions)
+        self.assertFalse(has_arg(foo_callable, 'invalid_arg'))
+        self.assertTrue(has_arg(foo_callable.positional_argument_call, 'arg1'))
+        self.assertFalse(has_arg(foo_callable.multiple_positional_arguments_call, 'argX'))
+        self.assertFalse(has_arg(foo_callable.keyword_argument_call, 'argX'))
+        self.assertTrue(has_arg(foo_callable.keyword_argument_call, 'filter_'))
+        self.assertTrue(has_arg(foo_callable.multiple_keyword_arguments_call, 'arg2'))
+        self.assertFalse(has_arg(foo_callable.multiple_keyword_arguments_call, 'arg3'))
+        self.assertFalse(has_arg(foo_callable.undefined_keyword_arguments_call, 'argX'))
         # argname is None
         self.assertFalse(has_arg(foo_callable, None))
 
