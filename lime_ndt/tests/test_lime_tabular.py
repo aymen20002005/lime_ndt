@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..',
 from lime_ndt.discretize import QuartileDiscretizer, DecileDiscretizer, EntropyDiscretizer
 from sklearn.model_selection import train_test_split
 
-from lime_ndt.lime_tabular import LimeTabularExplainer
+from lime_ndt.lime_tabular import LimeNdtExplainer
 
 
 class TestLimeTabular(unittest.TestCase):
@@ -34,7 +34,7 @@ class TestLimeTabular(unittest.TestCase):
         rf.fit(self.train, self.labels_train)
         i = np.random.randint(0, self.test.shape[0])
 
-        explainer = LimeTabularExplainer(self.train,
+        explainer = LimeNdtExplainer(self.train,
                                          mode="classification",
                                          feature_names=self.feature_names,
                                          class_names=self.target_names,
@@ -65,7 +65,7 @@ class TestLimeTabular(unittest.TestCase):
         rf.fit(X, y)
         instance = np.random.randint(0, X.shape[0])
         feature_names = ["feature" + str(i) for i in range(20)]
-        explainer = LimeTabularExplainer(X,
+        explainer = LimeNdtExplainer(X,
                                          feature_names=feature_names,
                                          discretize_continuous=True)
 
@@ -85,7 +85,7 @@ class TestLimeTabular(unittest.TestCase):
         rf.fit(X, y)
         instance = np.random.randint(0, X.shape[0])
         feature_names = ["feature" + str(i) for i in range(n_features)]
-        explainer = LimeTabularExplainer(X,
+        explainer = LimeNdtExplainer(X,
                                          feature_names=feature_names,
                                          discretize_continuous=True)
 
@@ -101,7 +101,7 @@ class TestLimeTabular(unittest.TestCase):
         rf.fit(self.train, self.labels_train)
         i = np.random.randint(0, self.test.shape[0])
 
-        explainer = LimeTabularExplainer(self.train,
+        explainer = LimeNdtExplainer(self.train,
                                          feature_names=self.feature_names,
                                          class_names=self.target_names,
                                          discretize_continuous=True)
@@ -125,7 +125,7 @@ class TestLimeTabular(unittest.TestCase):
         rf.fit(self.train, self.labels_train)
         i = np.random.randint(0, self.test.shape[0])
 
-        explainer = LimeTabularExplainer(self.train,
+        explainer = LimeNdtExplainer(self.train,
                                          feature_names=self.feature_names,
                                          class_names=self.target_names,
                                          training_labels=self.labels_train,
@@ -162,7 +162,7 @@ class TestLimeTabular(unittest.TestCase):
         # ----------------------------------------------------------------------
         discretizer = QuartileDiscretizer(X, [], feature_names, y,
                                           random_state=10)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -172,7 +172,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = QuartileDiscretizer(X, [], feature_names, y,
                                           random_state=10)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -187,7 +187,7 @@ class TestLimeTabular(unittest.TestCase):
         # ----------------------------------------------------------------------
         discretizer = DecileDiscretizer(X, [], feature_names, y,
                                         random_state=10)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -197,7 +197,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = DecileDiscretizer(X, [], feature_names, y,
                                         random_state=10)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -212,7 +212,7 @@ class TestLimeTabular(unittest.TestCase):
         # ----------------------------------------------------------------------
         discretizer = EntropyDiscretizer(X, [], feature_names, y,
                                          random_state=10)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -222,7 +222,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = EntropyDiscretizer(X, [], feature_names, y,
                                          random_state=10)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -251,7 +251,7 @@ class TestLimeTabular(unittest.TestCase):
         # ---------------------------------[1]----------------------------------
         discretizer = QuartileDiscretizer(X, [], feature_names, y,
                                           random_state=20)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -261,7 +261,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = QuartileDiscretizer(X, [], feature_names, y,
                                           random_state=10)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -274,7 +274,7 @@ class TestLimeTabular(unittest.TestCase):
         # ---------------------------------[2]----------------------------------
         discretizer = QuartileDiscretizer(X, [], feature_names, y,
                                           random_state=20)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -284,7 +284,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = QuartileDiscretizer(X, [], feature_names, y,
                                           random_state=10)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -297,7 +297,7 @@ class TestLimeTabular(unittest.TestCase):
         # ---------------------------------[3]----------------------------------
         discretizer = QuartileDiscretizer(X, [], feature_names, y,
                                           random_state=20)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -307,7 +307,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = QuartileDiscretizer(X, [], feature_names, y,
                                           random_state=20)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -320,7 +320,7 @@ class TestLimeTabular(unittest.TestCase):
         # ---------------------------------[4]----------------------------------
         discretizer = QuartileDiscretizer(X, [], feature_names, y,
                                           random_state=20)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -330,7 +330,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = QuartileDiscretizer(X, [], feature_names, y,
                                           random_state=20)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -347,7 +347,7 @@ class TestLimeTabular(unittest.TestCase):
         # ---------------------------------[1]----------------------------------
         discretizer = DecileDiscretizer(X, [], feature_names, y,
                                         random_state=20)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -357,7 +357,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = DecileDiscretizer(X, [], feature_names, y,
                                         random_state=10)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -370,7 +370,7 @@ class TestLimeTabular(unittest.TestCase):
         # ---------------------------------[2]----------------------------------
         discretizer = DecileDiscretizer(X, [], feature_names, y,
                                         random_state=20)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -380,7 +380,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = DecileDiscretizer(X, [], feature_names, y,
                                         random_state=10)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -393,7 +393,7 @@ class TestLimeTabular(unittest.TestCase):
         # ---------------------------------[3]----------------------------------
         discretizer = DecileDiscretizer(X, [], feature_names, y,
                                         random_state=20)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -403,7 +403,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = DecileDiscretizer(X, [], feature_names, y,
                                         random_state=20)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -416,7 +416,7 @@ class TestLimeTabular(unittest.TestCase):
         # ---------------------------------[4]----------------------------------
         discretizer = DecileDiscretizer(X, [], feature_names, y,
                                         random_state=20)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -426,7 +426,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = DecileDiscretizer(X, [], feature_names, y,
                                         random_state=20)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -443,7 +443,7 @@ class TestLimeTabular(unittest.TestCase):
         # ---------------------------------[1]----------------------------------
         discretizer = EntropyDiscretizer(X, [], feature_names, y,
                                          random_state=20)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -453,7 +453,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = EntropyDiscretizer(X, [], feature_names, y,
                                          random_state=10)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -466,7 +466,7 @@ class TestLimeTabular(unittest.TestCase):
         # ---------------------------------[2]----------------------------------
         discretizer = EntropyDiscretizer(X, [], feature_names, y,
                                          random_state=20)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -476,7 +476,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = EntropyDiscretizer(X, [], feature_names, y,
                                          random_state=10)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -489,7 +489,7 @@ class TestLimeTabular(unittest.TestCase):
         # ---------------------------------[3]----------------------------------
         discretizer = EntropyDiscretizer(X, [], feature_names, y,
                                          random_state=20)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -499,7 +499,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = EntropyDiscretizer(X, [], feature_names, y,
                                          random_state=20)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -512,7 +512,7 @@ class TestLimeTabular(unittest.TestCase):
         # ---------------------------------[4]----------------------------------
         discretizer = EntropyDiscretizer(X, [], feature_names, y,
                                          random_state=20)
-        explainer_1 = LimeTabularExplainer(X,
+        explainer_1 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -522,7 +522,7 @@ class TestLimeTabular(unittest.TestCase):
 
         discretizer = EntropyDiscretizer(X, [], feature_names, y,
                                          random_state=20)
-        explainer_2 = LimeTabularExplainer(X,
+        explainer_2 = LimeNdtExplainer(X,
                                            feature_names=feature_names,
                                            discretize_continuous=True,
                                            discretizer=discretizer,
@@ -535,17 +535,17 @@ class TestLimeTabular(unittest.TestCase):
     def testFeatureNamesAndCategoricalFeats(self):
         training_data = np.array([[0., 1.], [1., 0.]])
 
-        explainer = LimeTabularExplainer(training_data=training_data)
+        explainer = LimeNdtExplainer(training_data=training_data)
         self.assertEqual(explainer.feature_names, ['0', '1'])
         self.assertEqual(explainer.categorical_features, [0, 1])
 
-        explainer = LimeTabularExplainer(
+        explainer = LimeNdtExplainer(
             training_data=training_data,
             feature_names=np.array(['one', 'two'])
         )
         self.assertEqual(explainer.feature_names, ['one', 'two'])
 
-        explainer = LimeTabularExplainer(
+        explainer = LimeNdtExplainer(
             training_data=training_data,
             categorical_features=np.array([0]),
             discretize_continuous=False
@@ -560,7 +560,7 @@ class TestLimeTabular(unittest.TestCase):
             [1, 3, 0]
         ])
 
-        explainer = LimeTabularExplainer(
+        explainer = LimeNdtExplainer(
             training_data=training_data,
             categorical_features=[0, 1, 2]
         )
@@ -621,7 +621,7 @@ class TestLimeTabular(unittest.TestCase):
         data_stats["feature_frequencies"] = feature_frequencies
 
         data = np.zeros((2, len(self.feature_names)))
-        explainer = LimeTabularExplainer(
+        explainer = LimeNdtExplainer(
             data, feature_names=self.feature_names, random_state=10,
             training_data_stats=data_stats, training_labels=self.target_names)
 

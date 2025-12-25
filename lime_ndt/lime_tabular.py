@@ -112,7 +112,7 @@ class TableDomainMapper(explanation.DomainMapper):
         return ret
 
 
-class LimeTabularExplainer(object):
+class LimeNdtExplainer(object):
     """Explains predictions on tabular (i.e. matrix) data.
     For numerical features, perturb them by sampling from a Normal(0,1) and
     doing the inverse operation of mean-centering and scaling, according to the
@@ -568,11 +568,11 @@ class LimeTabularExplainer(object):
         return data, inverse
 
 
-class RecurrentTabularExplainer(LimeTabularExplainer):
+class RecurrentTabularExplainer(LimeNdtExplainer):
     """
     An explainer for keras-style recurrent neural networks, where the
     input shape is (n_samples, n_timesteps, n_features). This class
-    just extends the LimeTabularExplainer class and reshapes the training
+    just extends the LimeNdtExplainer class and reshapes the training
     data and feature names such that they become something like
 
     (val1_t1, val1_t2, val1_t3, ..., val2_t1, ..., valn_tn)

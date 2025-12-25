@@ -23,7 +23,7 @@ Below is a minimal example showing how to use lime_ndt to explain a regression m
 from sklearn.datasets import load_diabetes
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-from lime_ndt.lime_tabular import LimeTabularExplainer
+from lime_ndt.lime_tabular import LimeNdtExplainer
 from lime_ndt.utils.ndt_sklearn_wrapper import NDTRegressorWrapper
 import matplotlib.pyplot as plt
 
@@ -44,7 +44,7 @@ def predict_fn(X):
     return rf.predict(X)
 
 # Create the LIME explainer
-explainer = LimeTabularExplainer(
+explainer = LimeNdtExplainer(
     X_train,
     feature_names=diabetes.feature_names,
     class_names=None,
