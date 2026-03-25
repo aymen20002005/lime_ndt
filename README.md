@@ -77,6 +77,10 @@ plt.show()
 
 See [requirements.txt](requirements.txt) for the full list.
 
+## How to cite
+
+Mohamed Aymen Bouyahia and Argyris Kalogeratos, Enhancing LIME using Neural Decision Trees, arXiv preprint, http://arxiv.org/abs/2603.20919, 2026.
+
 ## License
 
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
